@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Typing Speed Test</title>
+  <style>
+    /* CSS কোড */
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f4f4f9;
+    }
+    
+    .container {
+      text-align: center;
+      max-width: 600px;
+    }
+    
+    #text-input {
+      width: 100%;
+      height: 100px;
+      margin: 10px 0;
+      font-size: 18px;
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Typing Speed Test</h1>
+    <p id="text-display">Type the following text:</p>
+    <p id="sample-text">The quick brown fox jumps over the lazy dog.</p>
+    <textarea id="text-input" placeholder="Start typing..." disabled></textarea>
+    <p id="timer">Time: <span id="time">60</span>s</p>
+    <p id="wpm">WPM: <span id="words-per-minute">0</span></p>
+    <button onclick="startGame()">Start Test</button>
+  </div>
+  
+  <script>
+    // JavaScript কোড
+    let startTime;
+    let timerInterval;
+    let timeLimit = 60;
+
+    function startGame() {
+      // সময় এবং WPM রিসেট
+      document.getElementById('time').textContent = timeLimit;
+      document.getElementById('words-per-minute').textContent = 0;
+      document.getElementById('text-input').value = '';
+      document.getElementById('text-input').disabled = false;
+      document.getElementById('text-input').focus();
+
+      // টাইমার শুরু করা
+      startTime = new Date().getTime();
+      clearInterval(timerInterval);
+      timerInterval = setInterval(updateTimer, 1000);
+    }
+
+    function updateTimer() {
+      let currentTime = new Date().getTime();
+      let timeElapsed = Math.floor((currentTime - startTime) / 1000);
+      let timeRemaining = timeLimit - timeElapsed;
+      document.getElementById('time').textContent = timeRemaining;
+
+      if (timeRemaining <= 0) {
+        endGame();
+      } else {
+        let inputText = document.getElementById('text-input').value;
+        let wordsTyped = inputText.trim().split(' ').filter(word => word !== '').length;
+        
+        let wpm = Math.round((wordsTyped / timeElapsed) * 60);
+        document.getElementById('words-per-minute').textContent = isNaN(wpm) ? 0 : wpm;
+      }
+    }
+
+    function endGame() {
+      clearInterval(timerInterval);
+      document.getElementById('text-input').disabled = true;
+
+      let finalWpm = document.getElementById('words-per-minute').textContent;
+      alert('Time’s up! Your final WPM is ' + finalWpm);
+    }
+
+    // টাইপিং চেক করা
+    document.getElementById('text-input').addEventListener('input', function() {
+      let sampleText = document.getElementById('sample-text').textContent;
+      let typedText = this.value;
+
+      if (typedText === sampleText) {
+        endGame();
+        alert('Test completed early! Your WPM is ' + document.getElementById('words-per-minute').textContent);
+      }
+    });
+  </script>
+</body>
+</html>
